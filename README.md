@@ -1,19 +1,17 @@
 # ADD-PINN
 
-This repository contains the research code for **ADD-PINN: Adaptive Domain Decomposition based Physics-Informed Neural Networks via Spatial Clustering**.
+This repository contains the official research code for **ADD-PINN: Adaptive Domain Decomposition based Physics-Informed Neural Networks via Spatial Clustering**. The paper has been accepted by **Communications in Computational Physics (CICP)** and is awaiting publication.
 
-ADD-PINN extends standard physics-informed neural networks (PINNs) with an adaptive spatial domain-decomposition workflow. The code supports training a single global PINN, XPINN-style decomposed models, and ADD-PINN variants that use clustering, interface bands, balanced initialization, and optional subdomain adjustment during training.
+ADD-PINN extends standard physics-informed neural networks (PINNs) with an adaptive spatial domain-decomposition workflow. The code supports training a single global PINN, XPINN-style decomposed models, and ADD-PINN variants that use clustering, banded interfaces, balanced initialization, gradient-analysis-based synchronization control, and optional subdomain adjustment during training.
 
 ## Highlights
 
-- **Adaptive domain decomposition** for 2-D spatial domains using point clustering and graph optimization.
-- **Multiple training baselines** in one codebase: PINN, XPINN, and ADD-PINN configurations.
-- **Function approximation and PDE examples**, including benchmark scripts for:
-  - 2-D synthetic function fitting (`pinn_add/function2d/`)
-  - Poisson-Boltzmann-type equation on a complex 2-D domain (`pinn_add/poisson2d/`)
-  - 2-D heat equation (`pinn_add/heat2d/`)
-  - Lid-driven cavity and complex-shape cases (`pinn_add/ldc/`, `pinn_add/complexshape/`)
-- **Built on DeepXDE and PyTorch**, with geometry handling via Shapely and clustering/graph utilities via SciPy, scikit-learn, and NetworkX.
+The implementation follows the main contributions of the ADD-PINN paper:
+
+- **Subdomain shape manipulation via spatial clustering.** Polygonal blocks are autonomously grouped into irregular subdomains, and sampling points are generated inside those subdomains so the method can accommodate solution domains with complex shapes.
+- **Banded interface condition with improved subnetwork coupling.** ADD-PINN uses banded interface regions, an improved loss design, and synchronization-frequency control based on gradient analysis to make information exchange between subnetworks more efficient.
+- **Graph-optimization-based initialization and dynamic adjustment.** Domain initialization and adaptive subdomain adjustment are formulated with graph optimization to improve convergence speed and prediction accuracy.
+- **Reproducible benchmark scripts.** The repository includes examples for 2-D function approximation, Poisson-Boltzmann-type problems, heat equations, lid-driven cavity resources, and complex-shape domains.
 
 ## Repository layout
 
@@ -152,6 +150,23 @@ Typical outputs include serialized model state, metrics, figures, and decomposit
 - Some example scripts assume they are launched from their own directory because they load local `.dat` reference files.
 - The codebase is intended to accompany the ADD-PINN paper and may evolve as the manuscript and experiments are finalized.
 
-## Citation
+## Paper and citation
 
-If you use this repository in academic work, please cite the corresponding ADD-PINN paper once the final citation information is available.
+The ADD-PINN paper has been accepted by **Communications in Computational Physics (CICP)** and is currently awaiting publication. Please cite the paper if you use this repository in academic work. The final bibliographic information and paper URL will be filled in after publication.
+
+```bibtex
+@article{addpinn_cicp_todo,
+  title   = {ADD-PINN: Adaptive Domain Decomposition based Physics-Informed Neural Networks via Spatial Clustering},
+  author  = {TODO},
+  journal = {Communications in Computational Physics},
+  year    = {TODO},
+  volume  = {TODO},
+  number  = {TODO},
+  pages   = {TODO},
+  doi     = {TODO},
+  url     = {TODO}
+}
+```
+
+- Paper URL: TODO
+- Project page / documentation URL: TODO
