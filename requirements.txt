@@ -1,0 +1,9 @@
+deepxde>=1.11,<1.12
+torch
+numpy
+scipy
+scikit-learn
+shapely
+networkx
+matplotlib
+profilehooks
