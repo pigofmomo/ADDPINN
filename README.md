@@ -41,27 +41,24 @@ pip install -r requirements.txt
 
 ## Quick start
 
-Run examples from their own directories so local data paths resolve correctly.
+Run examples from the repository root with module commands so package imports resolve correctly.
 
 ### 2-D function approximation
 
 ```bash
-cd pinn_add/function2d
-python function2d.py
+python -m pinn_add.function2d.function2d
 ```
 
 ### Poisson-Boltzmann example
 
 ```bash
-cd pinn_add/poisson2d
-python poisson2d.py
+python -m pinn_add.poisson2d.poisson2d
 ```
 
 ### Heat-equation example
 
 ```bash
-cd pinn_add/heat2d
-python heat2d.py
+python -m pinn_add.heat2d.heat2d
 ```
 
 ## Basic usage
@@ -121,8 +118,12 @@ Outputs may include model states, metrics, figures, and decomposition artifacts.
 ## Notes
 
 - Default experiments can be computationally expensive; use suitable CPU/GPU resources.
-- Some scripts load local `.dat` files and should be launched from their own directories.
+- Example commands are intended to be launched from the repository root.
 - The code is research-oriented and may change as the paper record is finalized.
+
+## License
+
+This project is released under the MIT License. See `LICENSE` for details.
 
 ## Citation
 

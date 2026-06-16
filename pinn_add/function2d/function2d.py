@@ -1,3 +1,7 @@
+"""2-D function approximation benchmark for ADD-PINN.
+ADD-PINN 的二维函数拟合基准实验。
+"""
+
 import os.path
 import sys
 

@@ -1,9 +1,10 @@
-from distutils.command.config import config
+"""Subdomain model wrapper with DeepXDE losses, metrics, and optimizers.
+封装子区域模型、DeepXDE 损失函数、指标与优化器。
+"""
 
 import torch
 import numpy as np
 
-# from config_pinnadd import window_length
 from deepxde import gradients as grad
 from deepxde import losses as losses_module
 from deepxde import metrics as metrics_module
@@ -59,8 +60,8 @@ class SubModel:
         self.metrics = metrics
         self.count_iteration = 0
 
-    # return list of interface outputs (u and F), tensor
-    # with no grad
+    # Return detached interface outputs (u and F).
+    # 返回不带梯度的界面输出（u 与 F）。
 
     def outputs_inter(self):
         inter_outputs = []
@@ -90,7 +91,7 @@ class SubModel:
 
     def calculate_losses(self):
 
-        # if data is a function, only calculate 1 loss
+        # Function fitting has a single loss term. / 函数拟合只有一个损失项。
         if isinstance(self.data, Function):
             outputs = self.outputs(True, self.data.col_pts)
             self.total_loss = self.data.function_loss(outputs, self.loss_fn)
@@ -149,7 +150,7 @@ class SubModel:
             self.total_loss = total_loss * torch.as_tensor(self.data.loss_weights)
 
         if self.data.analyze_gradient:
-            self.total_loss = self.total_loss # Tensor
+            self.total_loss = self.total_loss
         else:
             self.total_loss = torch.sum(self.total_loss)
 
@@ -172,7 +173,7 @@ class SubModel:
             self.opt.zero_grad()
             ratio_list = []
             if anaylze_gradient and (count_this_epoch+1) % probe_grad_period == 0 and not config_pinnadd.static_frequency:
-                num_interior_loss_term = 2 if self.data.ic_pts is None else 3  # time pde has 3 terms: col, bc, ic
+                num_interior_loss_term = 2 if self.data.ic_pts is None else 3  # Time PDE adds IC loss. / 含时 PDE 增加初始条件损失。
                 mean_grads = []
 
                 for j in range(len(self.total_loss)):
@@ -218,14 +219,14 @@ class SubModel:
             self.count_iteration += 1
             count_this_epoch +=1
 
-            # 判断是否提前结束训练
+            # Check whether early stopping is triggered. / 检查是否触发提前停止。
             if stop_early:
                 # print("Early stop at iteration", self.count_iteration)
                 break
 
         return self.count_iteration
 
-    def train_lbfgs(self): # todo: closure() for lbfgs
+    def train_lbfgs(self):
         pass
 
     def test(self, iteration=None):

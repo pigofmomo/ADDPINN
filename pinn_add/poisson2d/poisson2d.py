@@ -1,3 +1,7 @@
+"""Poisson-Boltzmann benchmark on a domain with circular holes.
+带圆孔区域上的 Poisson-Boltzmann 基准实验。
+"""
+
 import deepxde as dde
 import numpy as np
 import torch
@@ -6,9 +10,10 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from shapely.geometry import Polygon, Point
 
-import config_pinnadd
+from .. import config_pinnadd
 import json
 import os
+from pathlib import Path
 
 def pde(x, u):
     k = 8
@@ -55,7 +60,8 @@ def boundary_circle(x, on_boundary):
 bc_rec = dde.DirichletBC(spatial_domain, lambda x: 0.2, boundary_rec, component=0)
 bc_circ = dde.DirichletBC(spatial_domain, lambda x: 1.0, boundary_circle, component=0)
 
-ref_data = np.loadtxt("./poisson_boltzmann2d.dat", comments="%", encoding='utf-8')
+DATA_DIR = Path(__file__).resolve().parent
+ref_data = np.loadtxt(DATA_DIR / "poisson_boltzmann2d.dat", comments="%", encoding="utf-8")
 
 layers1 = [2, 50, 50, 50, 50, 1]
 layers2 = [2, 50, 50, 50, 50, 1]
