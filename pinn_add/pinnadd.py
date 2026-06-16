@@ -1,3 +1,7 @@
+"""Main ADD-PINN orchestration class for decomposition, training, and evaluation.
+ADD-PINN 的主控类，负责区域分解、训练与评估。
+"""
+
 import numpy as np
 import torch
 import deepxde.nn.pytorch as nn
@@ -58,7 +62,7 @@ class PINNADD:
         self.mannual_centers = data["mannual_centers"] if "mannual_centers" in data.keys() else None
         self.mannual_scales = data["mannual_scales"] if "mannual_scales" in data.keys() else None
 
-        self.pointset = data["pointset"]  # PointSets2D class
+        self.pointset = data["pointset"]  # PointSets2D instance. / PointSets2D 实例。
 
         self.icbc = []
         self.t_span = None
@@ -68,7 +72,7 @@ class PINNADD:
         self.ref_sol = None
         self.global_pretrain_model = None
 
-        # initial nets
+        # Initialize subnetworks. / 初始化子网络。
         activation = "sin"
         initializer = "Glorot normal"
         self.nets = []
@@ -79,7 +83,7 @@ class PINNADD:
             self.init_subdomain(subdomain_divide_type=init_divide_type, filter_points_type=self.interface_type))
 
 
-        # initial pde for each domain
+        # Initialize data objects for each subdomain. / 为每个子区域初始化数据对象。
         self.data = []
         for i in range(self.domain_num):
             col_pts = self.data_col[i]
@@ -124,11 +128,11 @@ class PINNADD:
         self.mannual_centers = data["mannual_centers"] if "mannual_centers" in data.keys() else None
         self.mannual_scales = data["mannual_scales"] if "mannual_scales" in data.keys() else None
 
-        self.pointset = data["pointset"] # PointSets2D class
+        self.pointset = data["pointset"]  # PointSets2D instance. / PointSets2D 实例。
         self.pointset_bc_points = None
         self.pointset_bc_vals = None
         self.icbc = data["icbc"]
-        for constraint in self.icbc: # only 1 pointset bc is supported
+        for constraint in self.icbc:  # Only one point-set BC is supported. / 仅支持一个点集边界条件。
             if isinstance(constraint, PointSetBC):
                 self.pointset_bc_points = constraint.points
                 self.pointset_bc_vals = constraint.values.cpu().detach().numpy()
@@ -148,12 +152,7 @@ class PINNADD:
 
         self.data_col, self.data_bc, self.data_inter, self.connection, self.subdomain_polygons = (
             self.init_subdomain(subdomain_divide_type=init_divide_type, filter_points_type=self.interface_type))
-        # move pointset properties to self
-
-        # initial nets
-
-
-        # initial pde for each domain
+        # Initialize data objects for each subdomain. / 为每个子区域初始化数据对象。
         self.data = []
         for i in range(self.domain_num):
             col_pts = self.data_col[i]
@@ -237,7 +236,7 @@ class PINNADD:
                                   inter_pts=[],
                                   icbc=self.icbc,
                                   pointset_bc=[self.pointset_bc_points,
-                                               self.pointset_bc_vals] if self.pointset_bc_points is not None else None, # todo
+                                               self.pointset_bc_vals] if self.pointset_bc_points is not None else None,
                                   loss_weights=self.loss_weights[0] if self.loss_weights is not None else None,
                                   ref_data=self.ref_data,
                                   ref_sol=self.ref_sol,
@@ -319,7 +318,7 @@ class PINNADD:
             print("Polygon network is built.")
 
         cluster_all_points = self.pointset.cluster_all_points
-        # filter过程比较费时
+        # Point filtering is relatively expensive. / 点过滤过程相对耗时。
         if self.col_points_all is not None and self.filtered_col_points_for_each_polygon is None:
             self.filtered_col_points_for_each_polygon = self.pointset.cluster_all_points_inside
 
@@ -372,7 +371,7 @@ class PINNADD:
         loss_for_polygons = np.array(loss_for_polygons)
         cost_for_each_polygon = loss_for_polygons * self.polygon_area[:, np.newaxis]
 
-        # plot
+        # Optional diagnostic plot. / 可选诊断图。
 
         return cost_for_each_polygon
 
@@ -402,7 +401,7 @@ class PINNADD:
         else:
             raise ValueError("Interface type is not supported yet.")
 
-        # update data
+        # Refresh subdomain data after adjustment. / 子区域调整后刷新数据。
         self.data = []
         for i in range(self.domain_num):
             col_pts = self.data_col[i]

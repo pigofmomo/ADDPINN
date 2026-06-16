@@ -1,3 +1,7 @@
+"""Complex-domain Poisson benchmark for ADD-PINN.
+ADD-PINN 的复杂几何区域 Poisson 方程基准实验。
+"""
+
 import numpy as np
 import deepxde as dde
 import torch
@@ -6,29 +10,28 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from shapely.geometry import Polygon, Point
 
-import config_pinnadd
+from .. import config_pinnadd
 import json
 import os
 
 
 def pde(x, y):
-    u = y  # NN 输出
-    u_xx = dde.grad.hessian(u, x, i=0, j=0)  # d2u/dx2
-    u_yy = dde.grad.hessian(u, x, i=1, j=1)  # d2u/dy2
+    u = y  # Neural-network output. / 神经网络输出。
+    u_xx = dde.grad.hessian(u, x, i=0, j=0)  # d2u/dx2 / 对 x 的二阶导数。
+    u_yy = dde.grad.hessian(u, x, i=1, j=1)  # d2u/dy2 / 对 y 的二阶导数。
     return u_xx + u_yy
 
 
-# 解析解 u*(x,y) = x^3 - 3 x y^2
+# Exact solution u*(x,y) = x^3 - 3xy^2. / 解析解 u*(x,y) = x^3 - 3xy^2。
 def exact_solution(x):
-    # x: (N,2)
+    # Input shape: (N, 2). / 输入形状：(N, 2)。
     X = x[:, 0:1]
     Y = x[:, 1:2]
     return X**3 - 3 * X * (Y**2)
 
 def make_star_polygon(R=0.9, r=0.45, n_arms=5, center=(0.0, 0.0), theta0=0.0):
-    """
-    生成 2n 个顶点的星形多边形（交替使用外半径 R 和内半径 r）。
-    返回顶点列表，按逆时针排列，便于 deepxde.geometry.Polygon 使用。
+    """Create a star polygon with alternating outer and inner radii.
+    生成外半径与内半径交替的星形多边形。
     """
     cx, cy = center
     verts = []
@@ -51,7 +54,7 @@ if geom_type == "star":
     plt.axis('equal')
     plt.legend()
     plt.title("Star-shaped 2D domain")
-    # 保存为文件（不显示）
+    # Save the figure without displaying it. / 保存图片但不显示。
     plt.savefig("star_shape_domain.png", dpi=300, bbox_inches='tight')
     plt.close()
     print("✅ 已保存图片：star_shape_domain.png")
@@ -69,9 +72,9 @@ elif geom_type == "L":
     spatial_domain = dde.geometry.Polygon(L_points)
     spatial_domain_shapely = Polygon(L_points)
     
-    # 可视化
+    # Visualize the L-shaped domain. / 可视化 L 形区域。
     fig, ax = plt.subplots(figsize=(5,5))
-    x, y = spatial_domain_shapely.exterior.xy  # ✅ Shapely Polygon有exterior属性
+    x, y = spatial_domain_shapely.exterior.xy
     ax.plot(x, y, 'b-', linewidth=2, label='L-shape boundary')
     ax.fill(x, y, color='lightgreen', alpha=0.3)
     ax.scatter(*zip(*L_points), color='red', s=30, zorder=5)

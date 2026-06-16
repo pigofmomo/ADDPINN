@@ -1,3 +1,7 @@
+"""Data containers for PDE and function training tasks.
+PDE 与函数拟合任务的数据容器。
+"""
+
 import numpy as np
 import torch
 import deepxde.icbc
@@ -25,7 +29,8 @@ class PDE:
         self.ignore_inter_pde_loss = ignore_inter_pde_loss
         self.analyze_gradient = analyze_gradient
 
-        # numpy arrays to tensors
+        # Convert NumPy arrays to Torch tensors.
+        # 将 NumPy 数组转换为 Torch 张量。
         self.col_pts = torch.as_tensor(col_pts)
         for i in range(len(inter_pts)):
             if inter_pts[i] is not None:
@@ -36,7 +41,8 @@ class PDE:
         self.icbc = icbc
         self.ic = None
 
-        # pointset_bc
+        # Merge optional point-set boundary constraints.
+        # 合并可选的点集边界约束。
         self.pointset_bc = pointset_bc
         self.pointset_bc_pts = None
         self.pointset_bc_vals = None
@@ -47,18 +53,19 @@ class PDE:
             bc_pts = np.vstack([bc_pts, self.pointset_bc_pts])
             indices = []
             for row in self.pointset_bc_pts:
-                match = np.where((bc_pts == row).all(axis=1))[0]  # 找到匹配行
+                match = np.where((bc_pts == row).all(axis=1))[0]  # Find the matching row. / 查找匹配行。
                 indices.append(match[0] if match.size > 0 else -1)
             self.pointset_bc_idx = np.array(indices)
             self.bc_pts = torch.as_tensor(bc_pts)
             self.pointset_bc_pts = torch.as_tensor(self.pointset_bc_pts)
 
-        # filter different types of icbc
+        # Separate boundary and initial-condition constraints.
+        # 区分边界条件与初始条件约束。
         self.bc_pts_filtered = []
         self.bc_vals_idxs = []
         for constraint in self.icbc:
             if isinstance(constraint, deepxde.icbc.DirichletBC):
-                if hasattr(constraint.geom, "geometry"): # is time pde
+                if hasattr(constraint.geom, "geometry"):  # Time-dependent PDE. / 含时 PDE。
                     bc_vals_idx = constraint.filter_idx(np.hstack((bc_pts, np.zeros((bc_pts.shape[0], 1)))))
                 else:
                     bc_vals_idx = constraint.filter_idx(bc_pts)
@@ -73,7 +80,8 @@ class PDE:
                 self.ic = constraint
 
 
-        # is time pde
+        # Build initial-condition points for time-dependent PDEs.
+        # 为含时 PDE 构造初始条件点。
         self.ic_pts = None
         if t_span is not None and t_steps is not None and self.ic is not None:
             self.t_span = t_span

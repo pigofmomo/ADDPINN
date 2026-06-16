@@ -1,3 +1,7 @@
+"""Lid-driven cavity benchmark for PINN, XPINN, and ADD-PINN models.
+PINN、XPINN 与 ADD-PINN 的顶盖驱动方腔流基准实验。
+"""
+
 import deepxde as dde
 import numpy as np
 import torch
@@ -5,8 +9,9 @@ import pinn_add
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from shapely.geometry import Polygon, Point
-import config_pinnadd
+from .. import config_pinnadd
 import os, json
+from pathlib import Path
 
 def pde(x, u):
     Re = 100
@@ -53,7 +58,8 @@ bc_u_not_top = dde.DirichletBC(spatial_domain, lambda _: 0, boundary_not_top, co
 bc_v_not_top = dde.DirichletBC(spatial_domain, lambda _: 0, boundary_not_top, component=1)
 bc_p = dde.PointSetBC(np.array([[0, 0]]), np.array([[0]]), component=2)
 
-ref_data = np.loadtxt("./lid_driven_a" + str(a) + ".dat", comments="%")
+DATA_DIR = Path(__file__).resolve().parent
+ref_data = np.loadtxt(DATA_DIR / ("lid_driven_a" + str(a) + ".dat"), comments="%")
 
 layers1 = [2, 30, 30, 30, 30, 3]
 layers2 = [2, 30, 30, 30, 30, 3]

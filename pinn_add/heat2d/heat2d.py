@@ -1,3 +1,7 @@
+"""Time-dependent heat-equation benchmark for ADD-PINN.
+ADD-PINN 的含时热方程基准实验。
+"""
+
 import deepxde as dde
 import numpy as np
 import torch
@@ -5,7 +9,7 @@ import pinn_add
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from shapely.geometry import Polygon, Point
-import config_pinnadd
+from .. import config_pinnadd
 import json
 import os
 

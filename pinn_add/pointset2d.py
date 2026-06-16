@@ -1,3 +1,7 @@
+"""2-D point sampling, clustering, and subdomain construction utilities.
+二维点采样、聚类与子区域构造工具。
+"""
+
 from shapely.geometry.multilinestring import MultiLineString
 
 import numpy as np
@@ -16,19 +20,15 @@ class PointSets2D:
     def __init__(self, geom, divide_config=None, random_seed=42, plot_config=None, spatial_domain_shapely=None):
         if plot_config is None:
             plot_config = {
-                "points_cluster": [True, None],  # [if_plot, save_path]
+                "points_cluster": [True, None],  # [if_plot, save_path] / [是否绘图, 保存路径]
                 "voronoi": [True, None],
                 "polygons": [True, None],
                 "subdomain": [True, None],
                 "filtered_points": [True, None]
             }
         self.plot_config = plot_config
-        # 有如下几个图：
-        # 1. 聚类后的点
-        # 2. 聚类后的点+凸包+Voronoi图
-        # 3. Polygon图
-        # 4. Polygon图合并后的图
-        # 5. 不同区域以及各种配点的图
+        # Diagnostic plots: clusters, Voronoi cells, polygons, merged subdomains, and sampled points.
+        # 诊断图包括：聚类点、Voronoi 单元、多边形、合并子区域和采样点。
 
         self.random_seed = random_seed
         self.geom = geom
@@ -57,7 +57,7 @@ class PointSets2D:
         self.connection = None
 
         self.seed_points = None
-        self.polygons_weight = None # 用于加权的polygon划分，等于：loss*area
+        self.polygons_weight = None  # Polygon weights for division, usually loss * area. / 多边形划分权重，通常为 loss * area。
         self.cluster_all_points = None
         self.cluster_all_points_inside = None
         self.cluster_all_points_boundary = None
